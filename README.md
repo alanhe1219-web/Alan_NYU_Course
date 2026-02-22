@@ -2,7 +2,6 @@
 
 A beautifully brutalist, semantic search engine for NYU courses powered by AI embeddings, FastAPI, PostgreSQL, and Next.js.
 
-![NYU Course Search Interface](https://via.placeholder.com/800x400?text=NYU+Course+Search)
 
 ## 🌟 The Vision
 This project radically redesigns academic software. Breaking away from generic, clinical interfaces, it uses a **Neo-Editorial Brutalist** aesthetic, featuring high-contrast stark layouts, dramatic oversized typography (`Cormorant Garamond` paired with `Outfit`), and buttery-smooth `framer-motion` reveals to make discovering classes feel like flipping through a premium art archive.
@@ -33,10 +32,19 @@ Start the `pgvector` enabled PostgreSQL database and Redis:
 docker-compose up -d
 ```
 
-*(Note: Data Scraping and Embedding generation requires running `scraper/scrape.py` and `scraper/embed.py`. The massive 300MB `courses_embedded.json` file is intentionally omitted from source control.)*
+Since the massive 300MB `courses_embedded.json` file is omitted from source control, you must generate the data and initial database yourself:
 
-Initialize the database schema:
 ```bash
+# 1. Scrape the NYU Bulletin
+python scraper/scrape.py
+
+# 2. Generate Nomic Embeddings (requires HuggingFace token and downloads ML model)
+python scraper/embed.py
+
+# 3. Populate Postgres Database
+python backend/populate.py
+
+# 4. Initialize Planner Tables
 python backend/init_planner.py
 ```
 
