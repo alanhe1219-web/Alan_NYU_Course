@@ -1,19 +1,29 @@
 "use client";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
         if (!email.endsWith("@nyu.edu")) {
             setError("Please use a valid @nyu.edu email address.");
             return;
         }
-        // Pre-authorized or mock login success
+
         setError("");
-        window.location.href = "/";
+        const res = await signIn("credentials", {
+            email,
+            redirect: false,
+        });
+
+        if (res?.error) {
+            setError("Authentication failed.");
+        } else {
+            window.location.href = "/";
+        }
     };
 
     return (

@@ -89,20 +89,27 @@ async def get_course_details(course_code: str):
     if cached:
         return json.loads(cached)
         
-    # Query NYU Class search API or endpoints manually if available.
-    # The actual implementation of scraping the dynamic details goes here.
-    # For now, we return placeholder live data structure
+    import re
+    from backend.live_scraper import fetch_live_course_details
+
+    # 1. Fetch live data from FOSE
+    live_data = await fetch_live_course_details(course_code)
     
-    placeholder_data = {
-        "course_code": course_code,
-        "available_semesters": ["Fall 2026", "Spring 2026"],
-        "professors": ["John Doe", "Jane Smith"],
-        "prerequisites": "None",
-        "live_status": "Available dynamically from bulletins.nyu.edu/class-search/"
-    }
+    # 2. Add course code to payload
+    live_data["course_code"] = course_code
     
-    await redis_client.setex(cache_key, 86400, json.dumps(placeholder_data))
-    return placeholder_data
+    # 3. If PREREQS were not found in the live FOSE data, fallback to mapping from the database course description
+    if live_data["prerequisites"] == "None":
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(select(Course).where(Course.code == course_code))
+            course = result.scalar_one_or_none()
+            if course and course.description:
+                match = re.search(r'Prerequisite[s]?:?\s*(.*?)(?=\. [A-Z]|$)', course.description, re.IGNORECASE)
+                if match:
+                    live_data["prerequisites"] = match.group(1).strip()
+    
+    await redis_client.setex(cache_key, 86400, json.dumps(live_data))
+    return live_data
 
 @app.post("/search/feedback")
 async def submit_feedback(course_code: str, query: str, thumbs_up: bool):

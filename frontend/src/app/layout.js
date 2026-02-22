@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Cormorant_Garamond, Outfit } from "next/font/google";
+import { Providers } from "./providers";
 
 const cormorant = Cormorant_Garamond({
     subsets: ["latin"],
@@ -21,7 +22,9 @@ export default function RootLayout({ children }) {
     return (
         <html lang="en" className={`${cormorant.variable} ${outfit.variable}`}>
             <body className="font-sans antialiased bg-[#FAF9F6] text-neutral-900 selection:bg-[#57068c] selection:text-white min-h-screen flex flex-col">
-                {children}
+                <Providers>
+                    {children}
+                </Providers>
             </body>
         </html>
     );

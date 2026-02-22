@@ -33,6 +33,8 @@ services:
     environment:
       - DATABASE_URL=postgresql+asyncpg://nyu:password@db:5432/course_search
       - REDIS_URL=redis://redis:6379/0
+      - NEXTAUTH_SECRET=my-super-secure-production-secret-91823908
+      - NEXTAUTH_URL=http://localhost:3000
     ports:
       - "8000:8000"
 

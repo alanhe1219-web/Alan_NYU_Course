@@ -4,7 +4,18 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ArrowRight, BookOpen, X, Clock, User, Info, CheckCircle } from 'lucide-react';
 
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+
 export default function Home() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+
+    // Redirect unauthenticated users
+    if (status === 'unauthenticated') {
+        router.push('/login');
+    }
+
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -49,14 +60,14 @@ export default function Home() {
     };
 
     const handleSaveCourse = async () => {
-        if (!selectedCourse) return;
+        if (!selectedCourse || !session?.user?.email) return;
         setIsSaving(true);
         setSaveStatus('');
         try {
             const res = await fetch('http://localhost:8000/planner/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: 'test_user', course_code: selectedCourse.code })
+                body: JSON.stringify({ user_id: session.user.email, course_code: selectedCourse.code })
             });
             const data = await res.json();
             if (data.status === 'success' || data.status === 'already saved') {

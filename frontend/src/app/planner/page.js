@@ -4,17 +4,27 @@ import Link from "next/link";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, ArrowLeft } from 'lucide-react';
 
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 export default function Planner() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+
     const [savedCourses, setSavedCourses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        fetchPlanner();
-    }, []);
+        if (status === 'unauthenticated') {
+            router.push('/login');
+        } else if (status === 'authenticated' && session?.user?.email) {
+            fetchPlanner(session.user.email);
+        }
+    }, [status, session]);
 
-    const fetchPlanner = async () => {
+    const fetchPlanner = async (userEmail) => {
         try {
-            const res = await fetch('http://localhost:8000/planner/test_user');
+            const res = await fetch(`http://localhost:8000/planner/${encodeURIComponent(userEmail)}`);
             const data = await res.json();
             setSavedCourses(data);
         } catch (err) {
@@ -29,7 +39,7 @@ export default function Planner() {
             await fetch('http://localhost:8000/planner/remove', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: 'test_user', course_code: courseCode })
+                body: JSON.stringify({ user_id: session.user.email, course_code: courseCode })
             });
             setSavedCourses(prev => prev.filter(c => c.code !== courseCode));
         } catch (err) {
