@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+python-multipart
+sqlalchemy
+psycopg2-binary
+pgvector
+redis
+sentence-transformers
+beautifulsoup4
+requests
+python-dotenv
+alembic
+pydantic
+pydantic-settings

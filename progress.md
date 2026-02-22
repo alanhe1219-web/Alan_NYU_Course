@@ -1,0 +1,22 @@
+# NYU Course Search Implementation Progress
+
+- [ ] Tech Stack & Architecture Design
+  - [x] Initial design proposed
+  - [ ] User approval
+- [ ] Environment & Database Setup (PostgreSQL with pgvector, Redis)
+- [ ] Data Scraping Pipeline (Python)
+  - [x] Scrape course list from bulletins.nyu.edu/courses/
+  - [x] Compute Nomic embeddings for course descriptions
+  - [x] Populate database
+- [ ] Backend (FastAPI Application)
+  - [x] Vector similarity search endpoint
+  - [ ] Class-search API integration (for real-time details fetching)
+  - [ ] User auth (@nyu.edu) and profile endpoints
+  - [ ] Saved courses and thumb-up (relevance feedback) endpoints
+- [ ] Frontend (Next.js Framework)
+  - [ ] Modern UI setup (Tailwind, framer-motion)
+  - [ ] Authentication barrier
+  - [ ] Search interface with semantic search
+  - [ ] Course details view (dynamically querying class-search API)
+  - [ ] Saved courses planner view
+- [ ] Deployment Prep (Railway configuration)
