@@ -51,13 +51,13 @@ python backend/init_planner.py
 ### 3. Start the FastAPI Backend
 ```bash
 source venv/bin/activate
+pip install -r backend/requirements.txt
 export PYTHONPATH=$PYTHONPATH:$(pwd)
 uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ### 4. Start the Next.js Frontend
 ```bash
-cd frontend
 npm install
 npm run dev
 ```

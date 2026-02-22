@@ -9,8 +9,7 @@ This splits the application across platforms specialized for each task.
 Vercel is the creator of Next.js and hosts it flawlessly for free.
 - Push your code to GitHub.
 - Go to [Vercel](https://vercel.com/), create a new project, and import your GitHub repository.
-- Set the **Root Directory** to `frontend`.
-- Click **Deploy**. Vercel will automatically build and host the React interface.
+- Click **Deploy**. Vercel will auto-detect Next.js at the root, build it, and host the React interface natively.
 
 ### 2. Database: Supabase Database (or Neon)
 You need a PostgreSQL database that supports the `pgvector` extension.
