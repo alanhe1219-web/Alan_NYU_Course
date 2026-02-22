@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  db:
+    image: ankane/pgvector:v0.5.1
+    restart: always
+    environment:
+      POSTGRES_USER: nyu
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: course_search
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nyu -d course_search"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    restart: always
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://nyu:password@db:5432/course_search
+      - REDIS_URL=redis://redis:6379/0
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    restart: always
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    ports:
+      - "80:3000" # Expose frontend on standard HTTP port 80
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data_prod:

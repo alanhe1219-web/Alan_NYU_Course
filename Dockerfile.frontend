@@ -1,0 +1,23 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install dependencies based on the preferred package manager
+COPY frontend/package.json frontend/package-lock.json* ./
+RUN npm ci
+
+# Copy the rest of the frontend source code
+COPY frontend/ .
+
+# Disable Next.js telemetry
+ENV NEXT_TELEMETRY_DISABLED 1
+
+# Note: In production you should pass the NEXT_PUBLIC_API_URL build arg
+RUN npm run build
+
+EXPOSE 3000
+
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+CMD ["npm", "run", "start"]
